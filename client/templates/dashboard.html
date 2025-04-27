@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SynthesiseAI - Dashboard</title>
+    <link rel="icon" href="{{ url_for('static', path='/favicon.png') }}">
+    <link rel="stylesheet" href="{{ url_for('static', path='/styles.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code&display=swap" rel="stylesheet">
+    <style>
+        .submit-job {
+            margin-bottom: 30px;
+            padding: 25px;
+            background-color: #fcfaff;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--primary-light);
+        }
+        
+        .credit-info {
+            display: inline-block;
+            background-color: #f0f0f0;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            color: var(--grey-700);
+            margin-left: 10px;
+            vertical-align: middle;
+        }
+        
+        .dashboard-header {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .dashboard-header h2 {
+            font-size: 1.8rem;
+            color: var(--primary-color);
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <div class="logo-container">
+                    <img src="{{ url_for('static', path='/logo.png') }}" alt="SynthesiseAI Logo">
+                    <h1>SynthesiseAI</h1>
+                </div>
+                <nav>
+                    <ul>
+                        <li><a href="/">Home</a></li>
+                        <li><a href="/documentation">API Documentation</a></li>
+                        <li><a href="/dashboard" class="active">Dashboard</a></li>
+                        <li><a href="/logout">Logout</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </header>
+
+        <main>
+            <section class="dashboard-header">
+                <div class="user-info">
+                    <h2>Welcome, {{ user.username }}</h2>
+                    <p>Available Credits: <span class="credits">{{ user.credits }}</span></p>
+                </div>
+            </section>
+            
+            {% if error %}
+            <div class="alert error">
+                {{ error }}
+            </div>
+            {% endif %}
+            
+            <section class="submit-job">
+                <h3>Summarize a Document</h3>
+                <form method="POST" action="/submit-job">
+                    <div class="form-group">
+                        <label for="document_text">Paste your document text here:</label>
+                        <textarea id="document_text" name="document_text" rows="6" required placeholder="Paste your text here (minimum 30 words)..." data-show-count="true"></textarea>
+                        <div class="credit-info">0 words - 1 credit</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="max_summary_length">Maximum summary length:</label>
+                        <input type="number" id="max_summary_length" name="max_summary_length" min="30" max="500" value="150">
+                        <small>Maximum number of words in the generated summary</small>
+                    </div>
+                    <button type="submit" class="button primary">Generate Summary (1 credit)</button>
+                    <small>Cost: 1 credit for short documents (<500 words), 2 for medium (500-2000 words), 3 for long (>2000 words)</small>
+                </form>
+            </section>
+            
+            <div class="dashboard-grid">
+                <section class="jobs-section">
+                    <h3>Your Jobs</h3>
+                    {% if jobs %}
+                    <div class="table-container">
+                        <table class="jobs-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Document</th>
+                                    <th>Status</th>
+                                    <th>Created</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for job in jobs %}
+                                <tr>
+                                    <td>{{ job.id }}</td>
+                                    <td class="prompt-cell">{{ job.prompt[:30] }}{% if job.prompt|length > 30 %}...{% endif %}</td>
+                                    <td>
+                                        <span class="status-badge status-{{ job.status }}">
+                                            {{ job.status }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <!-- Date formatting with error prevention -->
+                                        {% if job.created_at is defined %}
+                                            {% if job.created_at is string %}
+                                                {{ job.created_at }}
+                                            {% else %}
+                                                {{ job.created_at.strftime('%Y-%m-%d %H:%M') }}
+                                            {% endif %}
+                                        {% else %}
+                                            Unknown date
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <a href="/job/{{ job.id }}" class="button small primary">View</a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="no-data">No jobs submitted yet.</p>
+                    {% endif %}
+                </section>
+                
+                <section class="notifications-section">
+                    <h3>Notifications</h3>
+                    {% if notifications %}
+                    <ul class="notifications-list">
+                        {% for notification in notifications %}
+                        <li class="notification-item {% if not notification.is_read %}unread{% endif %}" data-id="{{ notification.id }}">
+                            <p>{{ notification.message }}</p>
+                            <small>
+                                <!-- Date formatting with error prevention -->
+                                {% if notification.created_at is defined %}
+                                    {% if notification.created_at is string %}
+                                        {{ notification.created_at }}
+                                    {% else %}
+                                        {{ notification.created_at.strftime('%Y-%m-%d %H:%M') }}
+                                    {% endif %}
+                                {% else %}
+                                    Unknown date
+                                {% endif %}
+                            </small>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    {% else %}
+                    <p class="no-data">No notifications.</p>
+                    {% endif %}
+                </section>
+            </div>
+        </main>
+
+        <footer>
+            <p>&copy; 2025 SynthesiseAI. All rights reserved.</p>
+        </footer>
+    </div>
+    
+    <script src="{{ url_for('static', path='/script.js') }}"></script>
+</body>
+</html>

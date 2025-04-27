@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SynthesiseAI - Register</title>
+    <link rel="icon" href="{{ url_for('static', path='/favicon.png') }}">
+    <link rel="stylesheet" href="{{ url_for('static', path='/styles.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code&display=swap" rel="stylesheet">
+    <style>
+        .auth-form {
+            max-width: 450px;
+            margin: 0 auto;
+            padding: 35px;
+            border-radius: var(--radius-lg);
+            background-color: white;
+            box-shadow: var(--shadow-md);
+        }
+        
+        .error-box {
+            background-color: #FEF2F2;
+            border-radius: var(--radius-md);
+            padding: 15px;
+            margin-bottom: 20px;
+            border-left: 4px solid var(--error-color);
+        }
+        
+        .error-code {
+            display: inline-block;
+            background: #f8f8f8;
+            border-radius: 4px;
+            padding: 4px 8px;
+            font-family: 'Fira Code', monospace;
+            color: var(--primary-color);
+            font-size: 0.9em;
+            margin: 0 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <div class="logo-container">
+                    <img src="{{ url_for('static', path='/logo.png') }}" alt="SynthesiseAI Logo">
+                    <h1>SynthesiseAI</h1>
+                </div>
+                <nav>
+                    <ul>
+                        <li><a href="/">Home</a></li>
+                        <li><a href="/documentation">API Documentation</a></li>
+                        <li><a href="/login">Login</a></li>
+                        <li><a href="/register" class="active">Register</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </header>
+
+        <main>
+            <section class="auth-form">
+                <div class="page-title">
+                    <h2>Create Your Account</h2>
+                    <p>Sign up and get 10 free credits to start using SynthesiseAI</p>
+                </div>
+                
+                {% if error %}
+                <div class="alert error">
+                    {% if "string_too_short" in error or "type" in error %}
+                        <p>Password must be at least 8 characters long.</p>
+                    {% elif "must be" in error %}
+                        {% set parts = error.split("must be") %}
+                        {% if parts|length > 1 %}
+                            <p>{{ parts[0] }} <span class="error-code">must be{{ parts[1] }}</span></p>
+                        {% else %}
+                            <p>{{ error }}</p>
+                        {% endif %}
+                    {% else %}
+                        <p>{{ error }}</p>
+                    {% endif %}
+                </div>
+                {% endif %}
+                
+                <form method="POST" action="/register">
+                    <div class="form-group">
+                        <label for="username">Username</label>
+                        <input type="text" id="username" name="username" value="{{ username or '' }}" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" value="{{ email or '' }}" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" name="password" required>
+                        <small>Password must be at least 8 characters long</small>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="submit" class="button primary">Create Account</button>
+                    </div>
+                </form>
+                
+                <div class="auth-links">
+                    <p>Already have an account? <a href="/login">Login here</a></p>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>&copy; 2025 SynthesiseAI. All rights reserved.</p>
+        </footer>
+    </div>
+    
+    <script src="{{ url_for('static', path='/script.js') }}"></script>
+</body>
+</html>

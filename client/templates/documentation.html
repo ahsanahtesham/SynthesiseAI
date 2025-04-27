@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SynthesiseAI - API Documentation</title>
+    <link rel="icon" href="{{ url_for('static', path='/favicon.png') }}">
+    <link rel="stylesheet" href="{{ url_for('static', path='/styles.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <div class="logo-container">
+                    <img src="{{ url_for('static', path='/logo.png') }}" alt="SynthesiseAI Logo">
+                    <h1>SynthesiseAI</h1>
+                </div>
+                <nav>
+                    <ul>
+                        <li><a href="/">Home</a></li>
+                        <li><a href="/documentation" class="active">API Documentation</a></li>
+                        <li><a href="/dashboard">Dashboard</a></li>
+                        <li><a href="/logout">Logout</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </header>
+
+        <main class="documentation">
+            {% if user %}
+            <div class="user-greeting">
+                <p>Welcome, {{ user.username }}</p>
+            </div>
+            {% endif %}
+            
+            <div class="page-title">
+                <h2>API Documentation</h2>
+                <p>Complete reference for the SynthesiseAI Document Summarization API</p>
+            </div>
+            
+            <section class="doc-section">
+                <h3>Introduction</h3>
+                <p>
+                    SynthesiseAI provides powerful document summarization capabilities through a secure, 
+                    credit-based API. Our service leverages state-of-the-art natural language processing 
+                    to deliver high-quality, abstractive summaries of text documents.
+                </p>
+                <p>
+                    All API endpoints (except authentication) require a valid access token. Our 
+                    credit-based system ensures you only pay for what you use.
+                </p>
+            </section>
+            
+            <section class="doc-section">
+                <h3>Authentication</h3>
+                <div class="endpoint">
+                    <h4><span class="api-method method-post">POST</span> /token</h4>
+                    <p>Get an access token using username and password.</p>
+                    <div class="endpoint-details">
+                        <h5>Request Body:</h5>
+                        <pre><code>{
+  "username": "your_username",
+  "password": "your_password"
+}</code></pre>
+                        <h5>Response:</h5>
+                        <pre><code>{
+  "access_token": "eyJhbGci...",
+  "token_type": "bearer"
+}</code></pre>
+                    </div>
+                </div>
+            </section>
+            
+            <section class="doc-section">
+                <h3>User Management</h3>
+                <div class="endpoint">
+                    <h4><span class="api-method method-post">POST</span> /users/</h4>
+                    <p>Create a new user account.</p>
+                    <div class="endpoint-details">
+                        <h5>Request Body:</h5>
+                        <pre><code>{
+  "username": "new_user",
+  "email": "user@example.com",
+  "password": "secure_password"
+}</code></pre>
+                    </div>
+                </div>
+                
+                <div class="endpoint">
+                    <h4><span class="api-method method-get">GET</span> /users/me/</h4>
+                    <p>Get current user information.</p>
+                    <div class="endpoint-details">
+                        <h5>Headers:</h5>
+                        <pre><code>Authorization: Bearer {access_token}</code></pre>
+                        <h5>Response:</h5>
+                        <pre><code>{
+  "id": 1,
+  "username": "your_username",
+  "email": "your@email.com",
+  "credits": 10,
+  "is_active": true,
+  "created_at": "2025-04-20T14:30:00"
+}</code></pre>
+                    </div>
+                </div>
+            </section>
+            
+            <section class="doc-section">
+                <h3>Document Summarization API</h3>
+                <div class="endpoint">
+                    <h4><span class="api-method method-post">POST</span> /jobs/</h4>
+                    <p>Create a new document summarization job.</p>
+                    <div class="endpoint-details">
+                        <h5>Headers:</h5>
+                        <pre><code>Authorization: Bearer {access_token}</code></pre>
+                        <h5>Request Body:</h5>
+                        <pre><code>{
+  "document_text": "Your document text here (minimum 30 words)...",
+  "max_summary_length": 150
+}</code></pre>
+                        <h5>Response:</h5>
+                        <pre><code>{
+  "id": 1,
+  "document_text": "Your document text here...",
+  "max_summary_length": 150,
+  "status": "pending",
+  "credits_used": 1,
+  "created_at": "2025-04-20T14:35:00",
+  "processed_at": null,
+  "result": null,
+  "user_id": 1
+}</code></pre>
+                    </div>
+                </div>
+                
+                <div class="endpoint">
+                    <h4><span class="api-method method-get">GET</span> /jobs/</h4>
+                    <p>Get all summarization jobs for the current user.</p>
+                    <div class="endpoint-details">
+                        <h5>Headers:</h5>
+                        <pre><code>Authorization: Bearer {access_token}</code></pre>
+                        <h5>Query Parameters:</h5>
+                        <pre><code>skip: int (optional, default=0)
+limit: int (optional, default=100)</code></pre>
+                    </div>
+                </div>
+                
+                <div class="endpoint">
+                    <h4><span class="api-method method-get">GET</span> /jobs/{job_id}</h4>
+                    <p>Get a specific summarization job by ID.</p>
+                    <div class="endpoint-details">
+                        <h5>Headers:</h5>
+                        <pre><code>Authorization: Bearer {access_token}</code></pre>
+                        <h5>Path Parameters:</h5>
+                        <pre><code>job_id: int</code></pre>
+                        <h5>Response:</h5>
+                        <pre><code>{
+  "id": 1,
+  "document_text": "Your original document text...",
+  "max_summary_length": 150,
+  "status": "completed",
+  "credits_used": 1,
+  "created_at": "2025-04-20T14:35:00",
+  "processed_at": "2025-04-20T14:36:00",
+  "result": "The generated summary text will appear here...",
+  "user_id": 1
+}</code></pre>
+                    </div>
+                </div>
+            </section>
+            
+            <section class="doc-section">
+                <h3>Notifications</h3>
+                <div class="endpoint">
+                    <h4><span class="api-method method-get">GET</span> /notifications/</h4>
+                    <p>Get all notifications for the current user.</p>
+                    <div class="endpoint-details">
+                        <h5>Headers:</h5>
+                        <pre><code>Authorization: Bearer {access_token}</code></pre>
+                        <h5>Query Parameters:</h5>
+                        <pre><code>skip: int (optional, default=0)
+limit: int (optional, default=100)</code></pre>
+                    </div>
+                </div>
+                
+                <div class="endpoint">
+                    <h4><span class="api-method method-put">PUT</span> /notifications/{notification_id}/read</h4>
+                    <p>Mark a notification as read.</p>
+                    <div class="endpoint-details">
+                        <h5>Headers:</h5>
+                        <pre><code>Authorization: Bearer {access_token}</code></pre>
+                        <h5>Path Parameters:</h5>
+                        <pre><code>notification_id: int</code></pre>
+                    </div>
+                </div>
+            </section>
+            
+            <section class="doc-section">
+                <h3>Credit System</h3>
+                <p>Each summarization request costs credits based on the document length:</p>
+                <ul class="custom-list">
+                    <li>Short documents (< 500 words): 1 credit</li>
+                    <li>Medium documents (500-2000 words): 2 credits</li>
+                    <li>Long documents (> 2000 words): 3 credits</li>
+                </ul>
+                <p>New users receive 10 credits upon registration.</p>
+            </section>
+            
+            <section class="doc-section">
+                <h3>Summarization Model</h3>
+                <p>Our API uses Facebook's BART-CNN model, which is specifically trained for document summarization tasks. Key features include:</p>
+                <ul class="custom-list">
+                    <li>Abstractive summarization (generates new text, not just extracts)</li>
+                    <li>Handles documents from various domains</li>
+                    <li>Produces coherent, readable summaries</li>
+                    <li>Customizable summary length</li>
+                </ul>
+            </section>
+            
+            <section class="doc-section">
+                <h3>Architecture Diagram</h3>
+                <div class="architecture-diagram">
+                    <img src="{{ url_for('static', path='/architecture.png') }}" alt="System Architecture Diagram">
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>&copy; 2025 SynthesiseAI. All rights reserved.</p>
+        </footer>
+    </div>
+    
+    <script src="{{ url_for('static', path='/script.js') }}"></script>
+</body>
+</html>

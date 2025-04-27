@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SynthesiseAI - Error</title>
+    <link rel="icon" href="{{ url_for('static', path='/favicon.png') }}">
+    <link rel="stylesheet" href="{{ url_for('static', path='/styles.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code&display=swap" rel="stylesheet">
+    <style>
+        .error-code {
+            display: inline-block;
+            background: #f8f8f8;
+            border-radius: 4px;
+            padding: 4px 8px;
+            font-family: 'Fira Code', monospace;
+            color: #B100FF;
+            font-size: 0.9em;
+            margin: 0 4px;
+        }
+        
+        .alert.error {
+            background-color: #FEF2F2;
+            border-color: var(--error-color);
+            color: #991B1B;
+            font-size: 1.1rem;
+            padding: 20px;
+        }
+        
+        .page-title {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        
+        .button-group {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 25px 0;
+        }
+        
+        .error-help {
+            background-color: #fcfaff;
+            padding: 25px;
+            border-radius: var(--radius-md);
+            margin-top: 25px;
+            border-left: 4px solid var(--primary-color);
+        }
+        
+        .error-help h3 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <div class="logo-container">
+                    <img src="{{ url_for('static', path='/logo.png') }}" alt="SynthesiseAI Logo">
+                    <h1>SynthesiseAI</h1>
+                </div>
+                <nav>
+                    <ul>
+                        <li><a href="/">Home</a></li>
+                        <li><a href="/documentation">API Documentation</a></li>
+                        <li><a href="/dashboard">Dashboard</a></li>
+                        <li><a href="/logout">Logout</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </header>
+
+        <main>
+            <div class="page-title">
+                <h2>Error Encountered</h2>
+            </div>
+            
+            <div class="alert error">
+                {% if "string_too_short" in error or "['type': 'string_too_short'" in error or "type" in error %}
+                    <p>Password must be at least 8 characters long.</p>
+                {% elif "must be" in error %}
+                    {% set parts = error.split("must be") %}
+                    {% if parts|length > 1 %}
+                        <p>{{ parts[0] }} <span class="error-code">must be{{ parts[1] }}</span></p>
+                    {% else %}
+                        <p>{{ error }}</p>
+                    {% endif %}
+                {% else %}
+                    <p>{{ error }}</p>
+                {% endif %}
+            </div>
+            
+            <div class="button-group">
+                <a href="javascript:history.back()" class="button secondary">Go Back</a>
+                <a href="/" class="button primary">Go to Home</a>
+                <a href="/reset" class="button warning">Reset Session</a>
+            </div>
+            
+            <div class="error-help">
+                <h3>Troubleshooting Tips</h3>
+                <ul class="custom-list">
+                    <li>Try refreshing the page</li>
+                    <li>Clear your browser cookies and try again</li>
+                    <li>Use the "Reset Session" button to clear your current session</li>
+                    <li>Make sure your document has at least 30 words</li>
+                    <li>Check that you have enough credits for the operation</li>
+                    {% if "password" in error %}
+                    <li>Password must be at least 8 characters long</li>
+                    {% endif %}
+                </ul>
+            </div>
+        </main>
+
+        <footer>
+            <p>&copy; 2025 SynthesiseAI. All rights reserved.</p>
+        </footer>
+    </div>
+    
+    <script src="{{ url_for('static', path='/script.js') }}"></script>
+</body>
+</html>

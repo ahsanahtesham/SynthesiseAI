@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SynthesiseAI - Job Details</title>
+    <link rel="icon" href="{{ url_for('static', path='/favicon.png') }}">
+    <link rel="stylesheet" href="{{ url_for('static', path='/styles.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code&display=swap" rel="stylesheet">
+    <style>
+        /* Loader animation for pending jobs */
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .loader {
+            border: 3px solid rgba(177, 0, 255, 0.1);
+            border-radius: 50%;
+            border-top: 3px solid #B100FF;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        
+        .job-details-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+        
+        .job-info {
+            background-color: #fcfaff;
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .job-metadata {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <div class="logo-container">
+                    <img src="{{ url_for('static', path='/logo.png') }}" alt="SynthesiseAI Logo">
+                    <h1>SynthesiseAI</h1>
+                </div>
+                <nav>
+                    <ul>
+                        <li><a href="/">Home</a></li>
+                        <li><a href="/documentation">API Documentation</a></li>
+                        <li><a href="/dashboard">Dashboard</a></li>
+                        <li><a href="/logout">Logout</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </header>
+
+        <main>
+            <div class="job-details-header">
+                <h2>Job #{{ job.id }}</h2>
+                <a href="/dashboard" class="button secondary">Back to Dashboard</a>
+            </div>
+            
+            <div class="job-details-card">
+                <div class="job-info">
+                    <div class="job-metadata">
+                        <p><strong>Status:</strong> <span class="status-badge status-{{ job.status }}">{{ job.status }}</span></p>
+                        <p><strong>Created:</strong> 
+                            <!-- Date formatting with error prevention -->
+                            {% if job.created_at is defined %}
+                                {% if job.created_at is string %}
+                                    {{ job.created_at }}
+                                {% else %}
+                                    {{ job.created_at.strftime('%Y-%m-%d %H:%M') }}
+                                {% endif %}
+                            {% else %}
+                                Unknown date
+                            {% endif %}
+                        </p>
+                        {% if job.processed_at %}
+                        <p><strong>Processed:</strong> 
+                            <!-- Date formatting with error prevention -->
+                            {% if job.processed_at is defined %}
+                                {% if job.processed_at is string %}
+                                    {{ job.processed_at }}
+                                {% else %}
+                                    {{ job.processed_at.strftime('%Y-%m-%d %H:%M') }}
+                                {% endif %}
+                            {% else %}
+                                Unknown date
+                            {% endif %}
+                        </p>
+                        {% endif %}
+                        <p><strong>Credits Used:</strong> {{ job.credits_used }}</p>
+                    </div>
+                </div>
+                
+                <div class="job-content">
+                    <div class="job-input">
+                        <h3>Input Document</h3>
+                        <div class="text-content">
+                            <p>{{ job.document_text if job.document_text is defined else job.prompt }}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="job-output">
+                        <h3>Summary Result</h3>
+                        {% if job.status == 'completed' %}
+                            <div class="text-content">
+                                <p>{{ job.result }}</p>
+                            </div>
+                        {% elif job.status == 'failed' %}
+                            <div class="text-content error">
+                                <p>{{ job.result }}</p>
+                            </div>
+                        {% else %}
+                            <div class="text-content pending">
+                                <p>Waiting for results...</p>
+                                <div class="loader"></div>
+                            </div>
+                            <script>
+                                // Refresh the page every 5 seconds if job is pending or processing
+                                setTimeout(function() {
+                                    window.location.reload();
+                                }, 5000);
+                            </script>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>&copy; 2025 SynthesiseAI. All rights reserved.</p>
+        </footer>
+    </div>
+    
+    <script src="{{ url_for('static', path='/script.js') }}"></script>
+</body>
+</html>
