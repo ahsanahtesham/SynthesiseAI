@@ -1,0 +1,12 @@
+2025-04-26 22:36:17,774 - app.main - INFO - Starting up the application
+2025-04-26 22:36:17,774 - app.queue - INFO - Queue processor initialized in background thread
+2025-04-26 22:36:17,779 - app.queue - INFO - Starting job processor
+2025-04-26 22:36:24,842 - main - INFO - Starting up the application
+2025-04-26 22:36:24,842 - app.queue - INFO - Queue processor initialized in background thread
+2025-04-26 22:36:24,849 - app.queue - INFO - Starting job processor
+2025-04-26 22:41:23,396 - main - INFO - Starting up the application
+2025-04-26 22:41:23,398 - app.queue - INFO - Queue processor initialized in background thread
+2025-04-26 22:41:23,402 - app.queue - INFO - Starting job processor
+2025-04-26 23:38:22,405 - main - INFO - Starting up the application
+2025-04-26 23:38:22,423 - app.queue - INFO - Queue processor initialized in background thread
+2025-04-26 23:38:22,429 - app.queue - INFO - Starting job processor
